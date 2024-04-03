@@ -9,9 +9,14 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogActions from '@mui/material/DialogActions';
 import TextField from '@mui/material/TextField';
 import { ReloadOutlined } from '@ant-design/icons';
+import { Select } from '../../../node_modules/@mui/material/index';
 
 const Products = () => {
   const [products, setProducts] = useState([]);
+  const [category, setCategory] = useState([]);
+  const [colour, setColour] = useState([]);
+  const [type, setType] = useState([]);
+  const [brand, setBrand] = useState([]);
   const [openDialog, setOpenDialog] = useState(false);
   const [newProduct, setNewProduct] = useState({
     Code: '',
@@ -29,6 +34,9 @@ const Products = () => {
 
   useEffect(() => {
     fetchData();
+    fetchCateData();
+    fetchColourData();
+    fetchTypeData();
   }, []);
 
   const fetchData = () => {
@@ -44,6 +52,50 @@ const Products = () => {
           Cost: 'Rs.' + product.Cost
         }));
         setProducts(modifiedProducts);
+      })
+      .catch((error) => {
+        console.error('Error fetching products:', error);
+      });
+  };
+  
+  const fetchCateData = () => {
+    axios
+      .get('http://localhost:5000/categories')
+      .then((response) => {
+        setCategory(response.data);
+      })
+      .catch((error) => {
+        console.error('Error fetching products:', error);
+      });
+  };
+
+  const fetchTypeData = () => {
+    axios
+      .get('http://localhost:5000/types')
+      .then((response) => {
+        setType(response.data);
+      })
+      .catch((error) => {
+        console.error('Error fetching products:', error);
+      });
+  };
+
+  const fetchColourData = () => {
+    axios
+      .get('http://localhost:5000/colours')
+      .then((response) => {
+        setColour(response.data);
+      })
+      .catch((error) => {
+        console.error('Error fetching products:', error);
+      });
+  };
+
+  const fetchBrandData = () => {
+    axios
+      .get('http://localhost:5000/brands')
+      .then((response) => {
+        setBrand(response.data);
       })
       .catch((error) => {
         console.error('Error fetching products:', error);
@@ -130,8 +182,8 @@ const Products = () => {
       <Dialog open={openDialog} onClose={handleCloseDialog}>
         <DialogTitle>Add Product</DialogTitle>
         <DialogContent>
-          <TextField name="Code" label="Code" value={newProduct.Code} onChange={handleInputChange} fullWidth margin="normal" />
           <TextField name="Name" label="Name" value={newProduct.Name} onChange={handleInputChange} fullWidth margin="normal" />
+          
           {/* Add other input fields for product details */}
         </DialogContent>
         <DialogActions>
