@@ -4,6 +4,9 @@ const cors = require('cors'); // Import the cors module
 const db = require('./models');
 const productRoutes = require('./routes/product');
 const brandRoutes = require('./routes/brand');
+const categoryRoutes = require('./routes/category');
+const colourRoutes = require('./routes//colour');
+const typeRoutes = require('./routes/type');
 
 const app = express();
 
@@ -18,7 +21,7 @@ app.use(cors({
 }));
 
 // Load routes
-app.use(productRoutes,brandRoutes);
+app.use(productRoutes,brandRoutes,categoryRoutes,colourRoutes,typeRoutes);
 
 const PORT = process.env.PORT || 3000;
 
