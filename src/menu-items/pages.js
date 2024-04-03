@@ -10,25 +10,30 @@ const icons = {
 // ==============================|| MENU ITEMS - EXTRA PAGES ||============================== //
 
 const pages = {
-  id: 'authentication',
-  title: 'Authentication',
+  id: 'product',
+  title: 'Products',
   type: 'group',
   children: [
     {
-      id: 'login1',
-      title: 'Login',
+      id: 'products',
+      title: 'Products',
       type: 'item',
-      url: '/login',
-      icon: icons.LoginOutlined,
-      target: true
+      url: '/products',
+      icon: icons.ChromeOutlined
     },
     {
-      id: 'register1',
-      title: 'Register',
+      id: 'brandsandcategory',
+      title: 'Product Brands & Categories',
       type: 'item',
-      url: '/register',
-      icon: icons.ProfileOutlined,
-      target: true
+      url: '/brandandcategory',
+      icon: icons.ChromeOutlined
+    },
+    {
+      id: 'typesandcolour',
+      title: 'Product Types & Colours',
+      type: 'item',
+      url: '/typeandcolour',
+      icon: icons.ChromeOutlined
     }
   ]
 };
