@@ -26,11 +26,17 @@ exports.createProduct = async (req, res) => {
 
 exports.getAllProducts = async (req, res) => {
   try {
-    const products = await db.sequelize.query('SELECT * FROM Products', {
+    const products = await db.sequelize.query(`
+      SELECT p.*, b.Name AS BrandName, c.Name AS CategoryName, co.Name AS ColourName, t.Name AS TypeName
+      FROM Products p
+      LEFT JOIN Brands b ON p.BrandID = b.BrandID
+      LEFT JOIN Categories c ON p.CategoryID = c.CategoryID
+      LEFT JOIN Colours co ON p.ColourID = co.ColourID
+      LEFT JOIN Types t ON p.TypeID = t.TypeID
+    `, {
       type: db.sequelize.QueryTypes.SELECT
     });
     res.json(products);
-    console.log(products);
   } catch (error) {
     console.error('Error fetching products:', error);
     res.status(500).json({ error: 'Internal Server Error' });
@@ -40,7 +46,15 @@ exports.getAllProducts = async (req, res) => {
 exports.getProductById = async (req, res) => {
   try {
     const { id } = req.params;
-    const product = await db.sequelize.query('SELECT * FROM Products WHERE Code = ?', {
+    const product = await db.sequelize.query(`
+      SELECT p.*, b.Name AS BrandName, c.Name AS CategoryName, co.Name AS ColourName, t.Name AS TypeName
+      FROM Products p
+      LEFT JOIN Brands b ON p.BrandID = b.BrandID
+      LEFT JOIN Categories c ON p.CategoryID = c.CategoryID
+      LEFT JOIN Colours co ON p.ColourID = co.ColourID
+      LEFT JOIN Types t ON p.TypeID = t.TypeID
+      WHERE p.Code = ?
+    `, {
       replacements: [id],
       type: db.sequelize.QueryTypes.SELECT
     });
