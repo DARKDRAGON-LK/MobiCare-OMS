@@ -8,8 +8,9 @@ import DialogTitle from '@mui/material/DialogTitle';
 import DialogContent from '@mui/material/DialogContent';
 import DialogActions from '@mui/material/DialogActions';
 import TextField from '@mui/material/TextField';
-import { ReloadOutlined } from '@ant-design/icons';
-import { InputAdornment, InputLabel, MenuItem, OutlinedInput, Select } from '../../../node_modules/@mui/material/index';
+import { ReloadOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
+import { InputAdornment, InputLabel, MenuItem, OutlinedInput, Select } from '@mui/material';
+import CustomSnackbar from 'components/CustomSnackbar';
 
 const Products = () => {
   const [products, setProducts] = useState([]);
@@ -17,7 +18,12 @@ const Products = () => {
   const [colour, setColour] = useState([]);
   const [type, setType] = useState([]);
   const [brand, setBrand] = useState([]);
+  const [showAddSucessAlert, setShowAddSucessAlert] = useState(false);
+  const [showEditSucessAlert, setShowEditSucessAlert] = useState(false);
+  const [showDeleteSucessAlert, setShowDeleteSucessAlert] = useState(false);
+  const [showErrorAlert, setShowErrorAlert] = useState(false);
   const [openDialog, setOpenDialog] = useState(false);
+
   const [newProduct, setNewProduct] = useState({
     Code: '',
     Name: '',
@@ -65,7 +71,7 @@ const Products = () => {
         setCategory(response.data);
       })
       .catch((error) => {
-        console.error('Error fetching products:', error);
+        console.error('Error fetching categories:', error);
       });
   };
 
@@ -76,7 +82,7 @@ const Products = () => {
         setType(response.data);
       })
       .catch((error) => {
-        console.error('Error fetching products:', error);
+        console.error('Error fetching types:', error);
       });
   };
 
@@ -87,7 +93,7 @@ const Products = () => {
         setColour(response.data);
       })
       .catch((error) => {
-        console.error('Error fetching products:', error);
+        console.error('Error fetching colours:', error);
       });
   };
 
@@ -98,7 +104,7 @@ const Products = () => {
         setBrand(response.data);
       })
       .catch((error) => {
-        console.error('Error fetching products:', error);
+        console.error('Error fetching brands:', error);
       });
   };
 
@@ -112,34 +118,82 @@ const Products = () => {
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
+
     setNewProduct({
       ...newProduct,
       [name]: value
     });
+    console.log(newProduct);
   };
 
   const handleAddProduct = () => {
-    // Implement logic to add product
-    // For example, you can make an API call to add the new product
-    console.log('Adding product:', newProduct);
-    // Reset new product state
-    setNewProduct({
-      Code: '',
-      Name: '',
-      TypeID: '',
-      BrandID: '',
-      CategoryID: '',
-      ColourID: '',
-      Cost: '',
-      SellingPrice: '',
-      UserID: '',
-      createdAt: new Date(),
-      updatedAt: new Date()
-    });
-    // Close the dialog
-    setOpenDialog(false);
-    // Refetch data to update the product list
-    fetchData();
+    // Add createdAt and updatedAt fields with current date and time
+    const currentDate = new Date();
+    const updatedProduct = {
+      ...newProduct,
+      createdAt: currentDate.toLocaleString('en-US', { timeZone: 'Asia/Kolkata' }),
+      updatedAt: currentDate.toLocaleString('en-US', { timeZone: 'Asia/Kolkata' })
+    };
+
+    // Make an API call to add the new product
+    axios
+      .post('http://localhost:5000/products', updatedProduct)
+      .then((response) => {
+        console.log('Product added successfully:', response.data);
+        setShowAddSucessAlert(true);
+        // Reset new product state
+        setNewProduct({
+          Code: '',
+          Name: '',
+          TypeID: '',
+          BrandID: '',
+          CategoryID: '',
+          ColourID: '',
+          Cost: '',
+          SellingPrice: '',
+          UserID: '',
+          createdAt: '',
+          updatedAt: ''
+        });
+        // Close the dialog
+        setOpenDialog(false);
+        // Refetch data to update the product list
+        fetchData();
+      })
+      .catch((error) => {
+        console.error('Error adding product:', error);
+        setShowErrorAlert(true);
+        // Handle error if necessary
+      });
+  };
+
+  const handleEditProduct = (id) => {
+    console.log(id);
+    setShowEditSucessAlert(true);
+  };
+
+  const handleDeleteProduct = (row) => {
+    let id = row.Code;
+    axios
+      .delete(`http://localhost:5000/products/${id}`)
+      .then((response) => {
+        console.log('Product deleted successfully:', response.data);
+        setShowDeleteSucessAlert(true);
+        // Refetch data to update the product list
+        fetchData();
+      })
+      .catch((error) => {
+        console.error('Error deleting product:', error);
+        setShowErrorAlert(true);
+        // Handle error if necessary
+      });
+  };
+
+  const handleCloseSnackbar = () => {
+    setShowErrorAlert(false);
+    setShowAddSucessAlert(false);
+    setShowEditSucessAlert(false);
+    setShowDeleteSucessAlert(false);
   };
 
   const columns = [
@@ -152,11 +206,64 @@ const Products = () => {
     { field: 'Cost', headerName: 'Cost', width: 90 },
     { field: 'SellingPrice', headerName: 'Sale Price', width: 90 },
     { field: 'UserID', headerName: 'User ID', width: 100 },
-    { field: 'createdAt', headerName: 'Created At', width: 150 }
+    { field: 'createdAt', headerName: 'Created At', width: 150 },
+    {
+      field: 'actions',
+      headerName: 'Actions',
+      width: 200,
+      renderCell: (params) => (
+        <div style={{maxWidth:'5px'}}>
+          <Button
+            variant="contained"
+            color="primary"
+            sx={{ maxWidth: '5px', width: '5px' }} // Corrected syntax
+            onClick={() => handleEditProduct(params.row)}
+          >
+            <EditOutlined />
+          </Button>
+          <Button
+            variant="contained"
+            color="error"
+            sx={{ maxWidth: '5px', width: '5px', marginLeft: '5px' }} // Adjust values as needed
+            onClick={() => handleDeleteProduct(params.row)}
+          >
+            <DeleteOutlined />
+          </Button>
+        </div>
+      )
+    }
   ];
 
   return (
     <MainCard>
+      <CustomSnackbar
+        open={showAddSucessAlert}
+        onClose={handleCloseSnackbar}
+        severity="success" // Pass the severity based on your logic
+        titlename="Success:"
+        message="Product Added Successfully!" // Pass the message based on your logic
+      />
+      <CustomSnackbar
+        open={showEditSucessAlert}
+        onClose={handleCloseSnackbar}
+        severity="success" // Pass the severity based on your logic
+        titlename="Success:"
+        message="Successfully Product Edited!" // Pass the message based on your logic
+      />
+      <CustomSnackbar
+        open={showDeleteSucessAlert}
+        onClose={handleCloseSnackbar}
+        severity="success" // Pass the severity based on your logic
+        titlename="Success:"
+        message="Successfully Product Deleted!" // Pass the message based on your logic
+      />
+      <CustomSnackbar
+        open={showErrorAlert}
+        onClose={handleCloseSnackbar}
+        severity="error" // Pass the severity based on your logic
+        titlename="Error:"
+        message="Something went wrong, Please try again!" // Pass the message based on your logic
+      />
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
         <h2 style={{ margin: 0 }}>Products</h2>
         <div>
@@ -169,7 +276,7 @@ const Products = () => {
         </div>
       </div>
 
-      <div style={{ height: '60vh', width: '95%' }}>
+      <div style={{ height: '60vh', width: '100%' }}>
         <DataGrid
           rows={products}
           columns={columns}
@@ -179,20 +286,20 @@ const Products = () => {
           disableSelectionOnClick
         />
       </div>
-      <Dialog open={openDialog} onClose={handleCloseDialog}>
+      <Dialog open={openDialog} onClose={handleCloseDialog} PaperProps={{ style: { minWidth: '600px' } }}>
         <DialogTitle>Add Product</DialogTitle>
         <DialogContent>
           <TextField name="Name" label="Name" value={newProduct.Name} onChange={handleInputChange} fullWidth margin="normal" />
+          <InputLabel sx={{ marginBottom: '5px' }}>Type</InputLabel>
           <Select
             required
             fullWidth
+            name="TypeID"
             label="Type"
-            name="type"
             variant="outlined"
             value={newProduct.TypeID}
             onChange={handleInputChange}
-            sx={{ marginBottom: '16px', colour: 'black' }}
-            margin="normal"
+            sx={{ marginBottom: '16px', color: 'black' }}
           >
             {type.map((type) => (
               <MenuItem key={type.TypeID} value={type.TypeID}>
@@ -200,16 +307,16 @@ const Products = () => {
               </MenuItem>
             ))}
           </Select>
+          <InputLabel sx={{ marginBottom: '5px' }}>Brand</InputLabel>
           <Select
             required
             fullWidth
+            name="BrandID"
             label="Brand"
-            name="brand"
             variant="outlined"
             value={newProduct.BrandID}
             onChange={handleInputChange}
             sx={{ marginBottom: '16px' }}
-            margin="normal"
           >
             {brand.map((b) => (
               <MenuItem key={b.BrandID} value={b.BrandID}>
@@ -217,16 +324,16 @@ const Products = () => {
               </MenuItem>
             ))}
           </Select>
+          <InputLabel sx={{ marginBottom: '5px' }}>Category</InputLabel>
           <Select
             required
             fullWidth
+            name="CategoryID"
             label="Category"
-            name="category"
             variant="outlined"
             value={newProduct.CategoryID}
             onChange={handleInputChange}
             sx={{ marginBottom: '16px' }}
-            margin="normal"
           >
             {category.map((cat) => (
               <MenuItem key={cat.CategoryID} value={cat.CategoryID}>
@@ -234,16 +341,16 @@ const Products = () => {
               </MenuItem>
             ))}
           </Select>
+          <InputLabel sx={{ marginBottom: '5px' }}>Colour</InputLabel>
           <Select
             required
             fullWidth
+            name="ColourID"
             label="Colour"
-            name="colour"
             variant="outlined"
             value={newProduct.ColourID}
             onChange={handleInputChange}
             sx={{ marginBottom: '16px' }}
-            margin="normal"
           >
             {colour.map((c) => (
               <MenuItem key={c.ColourID} value={c.ColourID}>
@@ -251,19 +358,21 @@ const Products = () => {
               </MenuItem>
             ))}
           </Select>
-          <InputLabel htmlFor="outlined-adornment-amount">Cost</InputLabel>
+          <InputLabel sx={{ marginBottom: '5px' }}>Cost</InputLabel>
           <OutlinedInput
             type="number"
             id="outlined-adornment-amount"
+            name="Cost"
             startAdornment={<InputAdornment position="start">Rs.</InputAdornment>}
             label="Cost"
             value={newProduct.Cost}
             onChange={handleInputChange}
             fullWidth
           />
-          <InputLabel htmlFor="outlined-adornment-amount">Sale Price</InputLabel>
+          <InputLabel sx={{ marginBottom: '5px' }}>Sale Price</InputLabel>
           <OutlinedInput
             type="number"
+            name="SellingPrice"
             id="outlined-adornment-amount"
             startAdornment={<InputAdornment position="start">Rs.</InputAdornment>}
             label="Sale Price"
@@ -273,7 +382,7 @@ const Products = () => {
           />
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleCloseDialog} color="secondary">
+          <Button onClick={handleCloseDialog} color="error">
             Cancel
           </Button>
           <Button onClick={handleAddProduct} color="primary">
