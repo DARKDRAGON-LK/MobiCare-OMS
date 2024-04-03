@@ -9,7 +9,7 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogActions from '@mui/material/DialogActions';
 import TextField from '@mui/material/TextField';
 import { ReloadOutlined } from '@ant-design/icons';
-import { Select } from '../../../node_modules/@mui/material/index';
+import { InputAdornment, InputLabel, MenuItem, OutlinedInput, Select } from '../../../node_modules/@mui/material/index';
 
 const Products = () => {
   const [products, setProducts] = useState([]);
@@ -21,10 +21,10 @@ const Products = () => {
   const [newProduct, setNewProduct] = useState({
     Code: '',
     Name: '',
-    TypeName: '',
-    BrandName: '',
-    CategoryName: '',
-    ColourName: '',
+    TypeID: '',
+    BrandID: '',
+    CategoryID: '',
+    ColourID: '',
     Cost: '',
     SellingPrice: '',
     UserID: '',
@@ -34,6 +34,7 @@ const Products = () => {
 
   useEffect(() => {
     fetchData();
+    fetchBrandData();
     fetchCateData();
     fetchColourData();
     fetchTypeData();
@@ -57,7 +58,6 @@ const Products = () => {
         console.error('Error fetching products:', error);
       });
   };
-  
   const fetchCateData = () => {
     axios
       .get('http://localhost:5000/categories')
@@ -126,10 +126,10 @@ const Products = () => {
     setNewProduct({
       Code: '',
       Name: '',
-      TypeName: '',
-      BrandName: '',
-      CategoryName: '',
-      ColourName: '',
+      TypeID: '',
+      BrandID: '',
+      CategoryID: '',
+      ColourID: '',
       Cost: '',
       SellingPrice: '',
       UserID: '',
@@ -183,8 +183,94 @@ const Products = () => {
         <DialogTitle>Add Product</DialogTitle>
         <DialogContent>
           <TextField name="Name" label="Name" value={newProduct.Name} onChange={handleInputChange} fullWidth margin="normal" />
-          
-          {/* Add other input fields for product details */}
+          <Select
+            required
+            fullWidth
+            label="Type"
+            name="type"
+            variant="outlined"
+            value={newProduct.TypeID}
+            onChange={handleInputChange}
+            sx={{ marginBottom: '16px', colour: 'black' }}
+            margin="normal"
+          >
+            {type.map((type) => (
+              <MenuItem key={type.TypeID} value={type.TypeID}>
+                {type.Name}
+              </MenuItem>
+            ))}
+          </Select>
+          <Select
+            required
+            fullWidth
+            label="Brand"
+            name="brand"
+            variant="outlined"
+            value={newProduct.BrandID}
+            onChange={handleInputChange}
+            sx={{ marginBottom: '16px' }}
+            margin="normal"
+          >
+            {brand.map((b) => (
+              <MenuItem key={b.BrandID} value={b.BrandID}>
+                {b.Name}
+              </MenuItem>
+            ))}
+          </Select>
+          <Select
+            required
+            fullWidth
+            label="Category"
+            name="category"
+            variant="outlined"
+            value={newProduct.CategoryID}
+            onChange={handleInputChange}
+            sx={{ marginBottom: '16px' }}
+            margin="normal"
+          >
+            {category.map((cat) => (
+              <MenuItem key={cat.CategoryID} value={cat.CategoryID}>
+                {cat.Name}
+              </MenuItem>
+            ))}
+          </Select>
+          <Select
+            required
+            fullWidth
+            label="Colour"
+            name="colour"
+            variant="outlined"
+            value={newProduct.ColourID}
+            onChange={handleInputChange}
+            sx={{ marginBottom: '16px' }}
+            margin="normal"
+          >
+            {colour.map((c) => (
+              <MenuItem key={c.ColourID} value={c.ColourID}>
+                {c.Name}
+              </MenuItem>
+            ))}
+          </Select>
+          <InputLabel htmlFor="outlined-adornment-amount">Cost</InputLabel>
+          <OutlinedInput
+            type="number"
+            id="outlined-adornment-amount"
+            startAdornment={<InputAdornment position="start">Rs.</InputAdornment>}
+            label="Cost"
+            value={newProduct.Cost}
+            onChange={handleInputChange}
+            fullWidth
+          />
+          <InputLabel htmlFor="outlined-adornment-amount">Sale Price</InputLabel>
+          <OutlinedInput
+            type="number"
+            id="outlined-adornment-amount"
+            startAdornment={<InputAdornment position="start">Rs.</InputAdornment>}
+            label="Sale Price"
+            value={newProduct.SellingPrice}
+            onChange={handleInputChange}
+            fullWidth
+          />
         </DialogContent>
         <DialogActions>
           <Button onClick={handleCloseDialog} color="secondary">
