@@ -3,6 +3,7 @@ const bodyParser = require('body-parser');
 const cors = require('cors'); // Import the cors module
 const db = require('./models');
 const productRoutes = require('./routes/product');
+const brandRoutes = require('./routes/brand');
 
 const app = express();
 
@@ -17,7 +18,7 @@ app.use(cors({
 }));
 
 // Load routes
-app.use(productRoutes);
+app.use(productRoutes,brandRoutes);
 
 const PORT = process.env.PORT || 3000;
 

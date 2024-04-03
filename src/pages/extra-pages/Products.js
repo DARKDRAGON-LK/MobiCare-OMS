@@ -8,6 +8,7 @@ import DialogTitle from '@mui/material/DialogTitle';
 import DialogContent from '@mui/material/DialogContent';
 import DialogActions from '@mui/material/DialogActions';
 import TextField from '@mui/material/TextField';
+import { ReloadOutlined } from '@ant-design/icons';
 
 const Products = () => {
   const [products, setProducts] = useState([]);
@@ -38,7 +39,9 @@ const Products = () => {
           ...product,
           id: product.Code, // Use 'Code' as 'id'
           createdAt: new Date(product.createdAt).toLocaleString('en-US', { timeZone: 'Asia/Kolkata' }), // Convert createdAt to +5:30
-          updatedAt: new Date(product.updatedAt).toLocaleString('en-US', { timeZone: 'Asia/Kolkata' }) // Convert updatedAt to +5:30
+          updatedAt: new Date(product.updatedAt).toLocaleString('en-US', { timeZone: 'Asia/Kolkata' }), // Convert updatedAt to +5:30
+          SellingPrice: 'Rs.' + product.SellingPrice,
+          Cost: 'Rs.' + product.Cost
         }));
         setProducts(modifiedProducts);
       })
@@ -94,20 +97,27 @@ const Products = () => {
     { field: 'BrandName', headerName: 'Brand', width: 90 },
     { field: 'CategoryName', headerName: 'Category', width: 70 },
     { field: 'ColourName', headerName: 'Colour', width: 70 },
-    { field: 'Cost', headerName: 'Cost', width: 70 },
-    { field: 'SellingPrice', headerName: 'Sale Price', width: 70 },
+    { field: 'Cost', headerName: 'Cost', width: 90 },
+    { field: 'SellingPrice', headerName: 'Sale Price', width: 90 },
     { field: 'UserID', headerName: 'User ID', width: 100 },
     { field: 'createdAt', headerName: 'Created At', width: 150 }
   ];
 
   return (
-    <MainCard title="Products">
-      <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '1rem' }}>
-        <Button style={{ float: 'right' }} variant="contained" onClick={addProduct}>
-          Add Product
-        </Button>
+    <MainCard>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
+        <h2 style={{ margin: 0 }}>Products</h2>
+        <div>
+          <Button variant="contained" color="warning" style={{ margin: 10, height: '100%' }} onClick={fetchData}>
+            <ReloadOutlined style={{ fontSize: '1.4rem' }} />
+          </Button>
+          <Button variant="contained" style={{ height: '100%' }} onClick={addProduct}>
+            Add Product
+          </Button>
+        </div>
       </div>
-      <div style={{ height: '60vh', width: '90%' }}>
+
+      <div style={{ height: '60vh', width: '95%' }}>
         <DataGrid
           rows={products}
           columns={columns}

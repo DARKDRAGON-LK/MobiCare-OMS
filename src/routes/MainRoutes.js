@@ -10,6 +10,8 @@ const DashboardDefault = Loadable(lazy(() => import('pages/dashboard')));
 // render - sample page
 const SamplePage = Loadable(lazy(() => import('pages/extra-pages/SamplePage')));
 const Products = Loadable(lazy(() => import('pages/extra-pages/Products')));
+const BrandAndCategory = Loadable(lazy(() => import('pages/extra-pages/BrandsAndCategory')));
+const TypeAndColour = Loadable(lazy(() => import('pages/extra-pages/TypeAndColour')));
 
 // render - utilities
 const Typography = Loadable(lazy(() => import('pages/components-overview/Typography')));
@@ -47,6 +49,14 @@ const MainRoutes = {
     {
       path: 'products',
       element: <Products />
+    },
+    {
+      path: 'typeandcolour',
+      element: <TypeAndColour />
+    },
+    {
+      path: 'brandandcategory',
+      element: <BrandAndCategory />
     },
     {
       path: 'shadow',
