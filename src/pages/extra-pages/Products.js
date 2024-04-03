@@ -38,7 +38,9 @@ const Products = () => {
           ...product,
           id: product.Code, // Use 'Code' as 'id'
           createdAt: new Date(product.createdAt).toLocaleString('en-US', { timeZone: 'Asia/Kolkata' }), // Convert createdAt to +5:30
-          updatedAt: new Date(product.updatedAt).toLocaleString('en-US', { timeZone: 'Asia/Kolkata' }) // Convert updatedAt to +5:30
+          updatedAt: new Date(product.updatedAt).toLocaleString('en-US', { timeZone: 'Asia/Kolkata' }), // Convert updatedAt to +5:30
+          SellingPrice: 'Rs.' + product.SellingPrice,
+          Cost: 'Rs.' + product.Cost
         }));
         setProducts(modifiedProducts);
       })
@@ -94,8 +96,8 @@ const Products = () => {
     { field: 'BrandName', headerName: 'Brand', width: 90 },
     { field: 'CategoryName', headerName: 'Category', width: 70 },
     { field: 'ColourName', headerName: 'Colour', width: 70 },
-    { field: 'Cost', headerName: 'Cost', width: 70 },
-    { field: 'SellingPrice', headerName: 'Sale Price', width: 70 },
+    { field: 'Cost', headerName: 'Cost', width: 90 },
+    { field: 'SellingPrice', headerName: 'Sale Price', width: 90 },
     { field: 'UserID', headerName: 'User ID', width: 100 },
     { field: 'createdAt', headerName: 'Created At', width: 150 }
   ];
@@ -107,7 +109,7 @@ const Products = () => {
           Add Product
         </Button>
       </div>
-      <div style={{ height: '60vh', width: '90%' }}>
+      <div style={{ height: '60vh', width: '95%' }}>
         <DataGrid
           rows={products}
           columns={columns}
