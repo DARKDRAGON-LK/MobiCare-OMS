@@ -9,17 +9,22 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogActions from '@mui/material/DialogActions';
 import TextField from '@mui/material/TextField';
 import { ReloadOutlined } from '@ant-design/icons';
+import { InputAdornment, InputLabel, MenuItem, OutlinedInput, Select } from '../../../node_modules/@mui/material/index';
 
 const Products = () => {
   const [products, setProducts] = useState([]);
+  const [category, setCategory] = useState([]);
+  const [colour, setColour] = useState([]);
+  const [type, setType] = useState([]);
+  const [brand, setBrand] = useState([]);
   const [openDialog, setOpenDialog] = useState(false);
   const [newProduct, setNewProduct] = useState({
     Code: '',
     Name: '',
-    TypeName: '',
-    BrandName: '',
-    CategoryName: '',
-    ColourName: '',
+    TypeID: '',
+    BrandID: '',
+    CategoryID: '',
+    ColourID: '',
     Cost: '',
     SellingPrice: '',
     UserID: '',
@@ -29,6 +34,10 @@ const Products = () => {
 
   useEffect(() => {
     fetchData();
+    fetchBrandData();
+    fetchCateData();
+    fetchColourData();
+    fetchTypeData();
   }, []);
 
   const fetchData = () => {
@@ -44,6 +53,49 @@ const Products = () => {
           Cost: 'Rs.' + product.Cost
         }));
         setProducts(modifiedProducts);
+      })
+      .catch((error) => {
+        console.error('Error fetching products:', error);
+      });
+  };
+  const fetchCateData = () => {
+    axios
+      .get('http://localhost:5000/categories')
+      .then((response) => {
+        setCategory(response.data);
+      })
+      .catch((error) => {
+        console.error('Error fetching products:', error);
+      });
+  };
+
+  const fetchTypeData = () => {
+    axios
+      .get('http://localhost:5000/types')
+      .then((response) => {
+        setType(response.data);
+      })
+      .catch((error) => {
+        console.error('Error fetching products:', error);
+      });
+  };
+
+  const fetchColourData = () => {
+    axios
+      .get('http://localhost:5000/colours')
+      .then((response) => {
+        setColour(response.data);
+      })
+      .catch((error) => {
+        console.error('Error fetching products:', error);
+      });
+  };
+
+  const fetchBrandData = () => {
+    axios
+      .get('http://localhost:5000/brands')
+      .then((response) => {
+        setBrand(response.data);
       })
       .catch((error) => {
         console.error('Error fetching products:', error);
@@ -74,10 +126,10 @@ const Products = () => {
     setNewProduct({
       Code: '',
       Name: '',
-      TypeName: '',
-      BrandName: '',
-      CategoryName: '',
-      ColourName: '',
+      TypeID: '',
+      BrandID: '',
+      CategoryID: '',
+      ColourID: '',
       Cost: '',
       SellingPrice: '',
       UserID: '',
@@ -130,9 +182,95 @@ const Products = () => {
       <Dialog open={openDialog} onClose={handleCloseDialog}>
         <DialogTitle>Add Product</DialogTitle>
         <DialogContent>
-          <TextField name="Code" label="Code" value={newProduct.Code} onChange={handleInputChange} fullWidth margin="normal" />
           <TextField name="Name" label="Name" value={newProduct.Name} onChange={handleInputChange} fullWidth margin="normal" />
-          {/* Add other input fields for product details */}
+          <Select
+            required
+            fullWidth
+            label="Type"
+            name="type"
+            variant="outlined"
+            value={newProduct.TypeID}
+            onChange={handleInputChange}
+            sx={{ marginBottom: '16px', colour: 'black' }}
+            margin="normal"
+          >
+            {type.map((type) => (
+              <MenuItem key={type.TypeID} value={type.TypeID}>
+                {type.Name}
+              </MenuItem>
+            ))}
+          </Select>
+          <Select
+            required
+            fullWidth
+            label="Brand"
+            name="brand"
+            variant="outlined"
+            value={newProduct.BrandID}
+            onChange={handleInputChange}
+            sx={{ marginBottom: '16px' }}
+            margin="normal"
+          >
+            {brand.map((b) => (
+              <MenuItem key={b.BrandID} value={b.BrandID}>
+                {b.Name}
+              </MenuItem>
+            ))}
+          </Select>
+          <Select
+            required
+            fullWidth
+            label="Category"
+            name="category"
+            variant="outlined"
+            value={newProduct.CategoryID}
+            onChange={handleInputChange}
+            sx={{ marginBottom: '16px' }}
+            margin="normal"
+          >
+            {category.map((cat) => (
+              <MenuItem key={cat.CategoryID} value={cat.CategoryID}>
+                {cat.Name}
+              </MenuItem>
+            ))}
+          </Select>
+          <Select
+            required
+            fullWidth
+            label="Colour"
+            name="colour"
+            variant="outlined"
+            value={newProduct.ColourID}
+            onChange={handleInputChange}
+            sx={{ marginBottom: '16px' }}
+            margin="normal"
+          >
+            {colour.map((c) => (
+              <MenuItem key={c.ColourID} value={c.ColourID}>
+                {c.Name}
+              </MenuItem>
+            ))}
+          </Select>
+          <InputLabel htmlFor="outlined-adornment-amount">Cost</InputLabel>
+          <OutlinedInput
+            type="number"
+            id="outlined-adornment-amount"
+            startAdornment={<InputAdornment position="start">Rs.</InputAdornment>}
+            label="Cost"
+            value={newProduct.Cost}
+            onChange={handleInputChange}
+            fullWidth
+          />
+          <InputLabel htmlFor="outlined-adornment-amount">Sale Price</InputLabel>
+          <OutlinedInput
+            type="number"
+            id="outlined-adornment-amount"
+            startAdornment={<InputAdornment position="start">Rs.</InputAdornment>}
+            label="Sale Price"
+            value={newProduct.SellingPrice}
+            onChange={handleInputChange}
+            fullWidth
+          />
         </DialogContent>
         <DialogActions>
           <Button onClick={handleCloseDialog} color="secondary">
