@@ -7,6 +7,13 @@ const brandRoutes = require('./routes/brand');
 const categoryRoutes = require('./routes/category');
 const colourRoutes = require('./routes//colour');
 const typeRoutes = require('./routes/type');
+const userRoutes = require('./routes/user');
+const trackingRoutes = require('./routes/tracking');
+const stockRoutes = require('./routes/stock');
+const orderProductRoutes = require('./routes/orderproduct');
+const orderRoutes = require('./routes/order');
+const customerRoutes = require('./routes/customer');
+const orderCostRoutes = require('./routes/ordercost');
 
 const app = express();
 
@@ -21,7 +28,7 @@ app.use(cors({
 }));
 
 // Load routes
-app.use(productRoutes,brandRoutes,categoryRoutes,colourRoutes,typeRoutes);
+app.use(productRoutes,brandRoutes,categoryRoutes,colourRoutes,typeRoutes,userRoutes,trackingRoutes,stockRoutes,orderProductRoutes,orderRoutes,customerRoutes,orderCostRoutes);
 
 const PORT = process.env.PORT || 3000;
 
