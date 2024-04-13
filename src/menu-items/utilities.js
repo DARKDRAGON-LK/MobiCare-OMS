@@ -1,17 +1,10 @@
 // assets
-import {
-  AppstoreAddOutlined,
-  AntDesignOutlined,
-  BarcodeOutlined,
-  BgColorsOutlined,
-  FontSizeOutlined,
-  LoadingOutlined
-} from '@ant-design/icons';
+import { AppstoreAddOutlined, AntDesignOutlined, BarcodeOutlined, DropboxOutlined, PlusOutlined, LoadingOutlined } from '@ant-design/icons';
 
 // icons
 const icons = {
-  FontSizeOutlined,
-  BgColorsOutlined,
+  PlusOutlined,
+  DropboxOutlined,
   BarcodeOutlined,
   AntDesignOutlined,
   LoadingOutlined,
@@ -21,23 +14,23 @@ const icons = {
 // ==============================|| MENU ITEMS - UTILITIES ||============================== //
 
 const utilities = {
-  id: 'utilities',
-  title: 'Utilities',
+  id: 'sales',
+  title: 'Sales',
   type: 'group',
   children: [
     {
-      id: 'util-typography',
-      title: 'Typography',
+      id: 'add-new-order',
+      title: 'Add New Order',
       type: 'item',
-      url: '/typography',
-      icon: icons.FontSizeOutlined
+      url: '/neworder',
+      icon: icons.PlusOutlined
     },
     {
-      id: 'util-color',
-      title: 'Color',
+      id: 'orders',
+      title: 'Orders',
       type: 'item',
-      url: '/color',
-      icon: icons.BgColorsOutlined
+      url: '/orders',
+      icon: icons.DropboxOutlined
     },
     {
       id: 'util-shadow',
