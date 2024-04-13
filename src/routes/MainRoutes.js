@@ -12,6 +12,10 @@ const SamplePage = Loadable(lazy(() => import('pages/extra-pages/SamplePage')));
 const Products = Loadable(lazy(() => import('pages/extra-pages/Products')));
 const BrandAndCategory = Loadable(lazy(() => import('pages/extra-pages/BrandsAndCategory')));
 const TypeAndColour = Loadable(lazy(() => import('pages/extra-pages/TypeAndColour')));
+const AddNewOrder = Loadable(lazy(() => import('pages/extra-pages/AddNewOrder')));
+const Orders = Loadable(lazy(() => import('pages/extra-pages/Orders')));
+const Customer = Loadable(lazy(() => import('pages/extra-pages/Customers')));
+const Users = Loadable(lazy(() => import('pages/extra-pages/Users')));
 
 // render - utilities
 const Typography = Loadable(lazy(() => import('pages/components-overview/Typography')));
@@ -57,6 +61,22 @@ const MainRoutes = {
     {
       path: 'brandandcategory',
       element: <BrandAndCategory />
+    },
+    {
+      path: 'neworder',
+      element: <AddNewOrder />
+    },
+    {
+      path: 'orders',
+      element: <Orders />
+    },
+    {
+      path: 'customers',
+      element: <Customer />
+    },
+    {
+      path: 'users',
+      element: <Users />
     },
     {
       path: 'shadow',
