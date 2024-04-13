@@ -1,42 +1,42 @@
 // assets
-import { ChromeOutlined, QuestionOutlined } from '@ant-design/icons';
+import { TeamOutlined, UsergroupAddOutlined } from '@ant-design/icons';
 
 // icons
 const icons = {
-  ChromeOutlined,
-  QuestionOutlined
+  TeamOutlined,
+  UsergroupAddOutlined
 };
 
 // ==============================|| MENU ITEMS - SAMPLE PAGE & DOCUMENTATION ||============================== //
 
 const support = {
-  id: 'support',
-  title: 'Support',
+  id: 'additions',
+  title: 'Additaions',
   type: 'group',
   children: [
     {
-      id: 'sample-page',
-      title: 'Sample Page',
+      id: 'customers',
+      title: 'Customers',
       type: 'item',
-      url: '/sample-page',
-      icon: icons.ChromeOutlined
+      url: '/customers',
+      icon: icons.TeamOutlined
     },
     {
-      id: 'products',
-      title: 'Products',
+      id: 'users',
+      title: 'Users',
       type: 'item',
-      url: '/products',
-      icon: icons.ChromeOutlined
-    },
-    {
-      id: 'documentation',
-      title: 'Documentation',
-      type: 'item',
-      url: 'https://codedthemes.gitbook.io/mantis/',
-      icon: icons.QuestionOutlined,
-      external: true,
-      target: true
-    }
+      url: '/users',
+      icon: icons.UsergroupAddOutlined
+    } //,
+    // {
+    //   id: 'documentation',
+    //   title: 'Documentation',
+    //   type: 'item',
+    //   url: 'https://codedthemes.gitbook.io/mantis/',
+    //   icon: icons.QuestionOutlined,
+    //   external: true,
+    //   target: true
+    // }
   ]
 };
 
