@@ -23,6 +23,8 @@ const Products = () => {
   const [showDeleteSucessAlert, setShowDeleteSucessAlert] = useState(false);
   const [showErrorAlert, setShowErrorAlert] = useState(false);
   const [openDialog, setOpenDialog] = useState(false);
+  const [openEditDialog, setOpenEditDialog] = useState(false);
+  const [selectedProduct, setSelectedProduct] = useState([]);
 
   const [newProduct, setNewProduct] = useState({
     Code: '',
@@ -54,9 +56,7 @@ const Products = () => {
           ...product,
           id: product.Code, // Use 'Code' as 'id'
           createdAt: new Date(product.createdAt).toLocaleString('en-US', { timeZone: 'Asia/Kolkata' }), // Convert createdAt to +5:30
-          updatedAt: new Date(product.updatedAt).toLocaleString('en-US', { timeZone: 'Asia/Kolkata' }), // Convert updatedAt to +5:30
-          SellingPrice: 'Rs.' + product.SellingPrice,
-          Cost: 'Rs.' + product.Cost
+          updatedAt: new Date(product.updatedAt).toLocaleString('en-US', { timeZone: 'Asia/Kolkata' }) // Convert updatedAt to +5:30
         }));
         setProducts(modifiedProducts);
       })
@@ -116,6 +116,19 @@ const Products = () => {
     setOpenDialog(false);
   };
 
+  // Function to handle opening edit dialog
+  const handleEditDialogOpen = (product) => {
+    setSelectedProduct(product);
+    console.log(product);
+    setOpenEditDialog(true);
+  };
+
+  // Function to handle closing edit dialog
+  const handleEditDialogClose = () => {
+    setOpenEditDialog(false);
+    setSelectedProduct(null);
+  };
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
 
@@ -124,6 +137,15 @@ const Products = () => {
       [name]: value
     });
     console.log(newProduct);
+  };
+
+  const handleInputEditChange = (e, product) => {
+    const { name, value } = e.target;
+
+    setSelectedProduct({
+      ...product,
+      [name]: value
+    });
   };
 
   const handleAddProduct = () => {
@@ -167,9 +189,27 @@ const Products = () => {
       });
   };
 
-  const handleEditProduct = (id) => {
-    console.log(id);
-    setShowEditSucessAlert(true);
+  // Function to handle updating product
+  const handleUpdateProduct = () => {
+    const currentDate = new Date();
+    const updatedProduct = {
+      ...selectedProduct,
+      updatedAt: currentDate.toLocaleString('en-US', { timeZone: 'Asia/Kolkata' })
+    };
+
+    axios
+      .put(`http://localhost:5000/products/${selectedProduct.Code}`, updatedProduct)
+      .then((response) => {
+        console.log('Product updated successfully:', response.data);
+        setShowEditSucessAlert(true);
+        handleEditDialogClose();
+        fetchData();
+      })
+      .catch((error) => {
+        console.error('Error updating product:', error);
+        setShowErrorAlert(true);
+        // Handle error if necessary
+      });
   };
 
   const handleDeleteProduct = (row) => {
@@ -199,25 +239,23 @@ const Products = () => {
   const columns = [
     { field: 'Code', headerName: 'Code', width: 80 },
     { field: 'Name', headerName: 'Name', width: 250 },
-    { field: 'TypeName', headerName: 'Type', width: 100 },
-    { field: 'BrandName', headerName: 'Brand', width: 90 },
-    { field: 'CategoryName', headerName: 'Category', width: 70 },
-    { field: 'ColourName', headerName: 'Colour', width: 70 },
-    { field: 'Cost', headerName: 'Cost', width: 90 },
-    { field: 'SellingPrice', headerName: 'Sale Price', width: 90 },
-    { field: 'UserID', headerName: 'User ID', width: 100 },
-    { field: 'createdAt', headerName: 'Created At', width: 150 },
+    { field: 'TypeName', headerName: 'Type', width: 120 },
+    { field: 'BrandName', headerName: 'Brand', width: 100 },
+    { field: 'CategoryName', headerName: 'Category', width: 90 },
+    { field: 'ColourName', headerName: 'Colour', width: 90 },
+    { field: 'Cost', headerName: 'Cost (Rs.)', width: 100 },
+    { field: 'SellingPrice', headerName: 'Sale Price (Rs.)', width: 100 },
     {
       field: 'actions',
       headerName: 'Actions',
       width: 200,
       renderCell: (params) => (
-        <div style={{maxWidth:'5px'}}>
+        <div style={{ maxWidth: '5px' }}>
           <Button
             variant="contained"
             color="primary"
             sx={{ maxWidth: '5px', width: '5px' }} // Corrected syntax
-            onClick={() => handleEditProduct(params.row)}
+            onClick={() => handleEditDialogOpen(params.row)} // Pass the row data to edit function
           >
             <EditOutlined />
           </Button>
@@ -276,7 +314,7 @@ const Products = () => {
         </div>
       </div>
 
-      <div style={{ height: '60vh', width: '100%' }}>
+      <div style={{ height: '60vh', width: '95%' }}>
         <DataGrid
           rows={products}
           columns={columns}
@@ -387,6 +425,119 @@ const Products = () => {
           </Button>
           <Button onClick={handleAddProduct} color="primary">
             Add
+          </Button>
+        </DialogActions>
+      </Dialog>
+      <Dialog open={openEditDialog} onClose={handleEditDialogClose} PaperProps={{ style: { minWidth: '600px' } }}>
+        <DialogTitle>Edit Product</DialogTitle>
+        <DialogContent>
+          {/* Similar to add product form, pre-fill fields with selectedProduct data */}
+          <TextField
+            name="Name"
+            label="Name"
+            value={selectedProduct ? selectedProduct.Name : ''}
+            onChange={(e) => handleInputEditChange(e, selectedProduct)}
+            fullWidth
+            margin="normal"
+          />
+          <InputLabel sx={{ marginBottom: '5px' }}>Type</InputLabel>
+          <Select
+            required
+            fullWidth
+            name="TypeID"
+            label="Type"
+            variant="outlined"
+            value={selectedProduct ? selectedProduct.TypeID : ''}
+            onChange={(e) => handleInputEditChange(e, selectedProduct)}
+            sx={{ marginBottom: '16px', color: 'black' }}
+          >
+            {type.map((type) => (
+              <MenuItem key={type.TypeID} value={type.TypeID}>
+                {type.Name}
+              </MenuItem>
+            ))}
+          </Select>
+          <InputLabel sx={{ marginBottom: '5px' }}>Brand</InputLabel>
+          <Select
+            required
+            fullWidth
+            name="BrandID"
+            label="Brand"
+            variant="outlined"
+            value={selectedProduct ? selectedProduct.BrandID : ''}
+            onChange={(e) => handleInputEditChange(e, selectedProduct)}
+            sx={{ marginBottom: '16px' }}
+          >
+            {brand.map((b) => (
+              <MenuItem key={b.BrandID} value={b.BrandID}>
+                {b.Name}
+              </MenuItem>
+            ))}
+          </Select>
+          <InputLabel sx={{ marginBottom: '5px' }}>Category</InputLabel>
+          <Select
+            required
+            fullWidth
+            name="CategoryID"
+            label="Category"
+            variant="outlined"
+            value={selectedProduct ? selectedProduct.CategoryID : ''}
+            onChange={(e) => handleInputEditChange(e, selectedProduct)}
+            sx={{ marginBottom: '16px' }}
+          >
+            {category.map((cat) => (
+              <MenuItem key={cat.CategoryID} value={cat.CategoryID}>
+                {cat.Name}
+              </MenuItem>
+            ))}
+          </Select>
+          <InputLabel sx={{ marginBottom: '5px' }}>Colour</InputLabel>
+          <Select
+            required
+            fullWidth
+            name="ColourID"
+            label="Colour"
+            variant="outlined"
+            value={selectedProduct ? selectedProduct.ColourID : ''}
+            onChange={(e) => handleInputEditChange(e, selectedProduct)}
+            sx={{ marginBottom: '16px' }}
+          >
+            {colour.map((c) => (
+              <MenuItem key={c.ColourID} value={c.ColourID}>
+                {c.Name}
+              </MenuItem>
+            ))}
+          </Select>
+          <InputLabel sx={{ marginBottom: '5px' }}>Cost</InputLabel>
+          <OutlinedInput
+            type="number"
+            id="outlined-adornment-amount"
+            name="Cost"
+            startAdornment={<InputAdornment position="start">Rs.</InputAdornment>}
+            label="Cost"
+            value={selectedProduct ? selectedProduct.Cost : ''}
+            onChange={(e) => handleInputEditChange(e, selectedProduct)}
+            fullWidth
+          />
+          <InputLabel sx={{ marginBottom: '5px' }}>Sale Price</InputLabel>
+          <OutlinedInput
+            type="number"
+            name="SellingPrice"
+            id="outlined-adornment-amount"
+            startAdornment={<InputAdornment position="start">Rs.</InputAdornment>}
+            label="Sale Price"
+            value={selectedProduct ? selectedProduct.SellingPrice : ''}
+            onChange={(e) => handleInputEditChange(e, selectedProduct)}
+            fullWidth
+          />
+          {/* Repeat for other fields */}
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleEditDialogClose} color="error">
+            Cancel
+          </Button>
+          <Button onClick={handleUpdateProduct} color="primary">
+            Update
           </Button>
         </DialogActions>
       </Dialog>
