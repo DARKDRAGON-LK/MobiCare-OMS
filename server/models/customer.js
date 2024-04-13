@@ -11,6 +11,7 @@ module.exports = (sequelize, Sequelize) => {
       District: Sequelize.STRING,
       ContactNumber: Sequelize.STRING,
       MobileNumber: Sequelize.STRING,
+      SocialMediaPlaform: Sequelize.STRING,
       UserID: Sequelize.INTEGER
     });
   
