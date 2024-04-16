@@ -16,6 +16,8 @@ const AddNewOrder = Loadable(lazy(() => import('pages/extra-pages/AddNewOrder'))
 const Orders = Loadable(lazy(() => import('pages/extra-pages/Orders')));
 const Customer = Loadable(lazy(() => import('pages/extra-pages/Customers')));
 const Users = Loadable(lazy(() => import('pages/extra-pages/Users')));
+const Stocks = Loadable(lazy(() => import('pages/extra-pages/Stocks')));
+const Scanner = Loadable(lazy(() => import('pages/extra-pages/Scan')));
 
 // render - utilities
 const Typography = Loadable(lazy(() => import('pages/components-overview/Typography')));
@@ -71,8 +73,16 @@ const MainRoutes = {
       element: <Orders />
     },
     {
+      path: 'stocks',
+      element: <Stocks />
+    },
+    {
       path: 'customers',
       element: <Customer />
+    },
+    {
+      path: 'scan',
+      element: <Scanner />
     },
     {
       path: 'users',
