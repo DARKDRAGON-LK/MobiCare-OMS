@@ -36,6 +36,7 @@ const AddNewOrder = () => {
   const [totalPrice, setTotalPrice] = useState(0);
   const [deliveryCharges, setDeliveryCharges] = useState(0);
   const [additionalCharges, setAdditionalCharges] = useState(0);
+  const [lastSaleID, setLastSaleID] = useState(0);
   const [netTotal, setNetTotal] = useState(0);
   const [paymentType, setPaymentType] = useState('');
   const [trackingDetails, setTrackingDetails] = useState('');
@@ -55,6 +56,8 @@ const AddNewOrder = () => {
   useEffect(() => {
     fetchCustomerData();
     fetchProductData();
+    fetchLastSaleID();
+    // eslint-disable-next-line
   }, []);
 
   const fetchCustomerData = () => {
@@ -73,6 +76,34 @@ const AddNewOrder = () => {
       .get('http://localhost:5000/products')
       .then((response) => {
         setProducts(response.data);
+        addQuantity();
+      })
+      .catch((error) => {
+        console.error('Error fetching products:', error);
+      });
+  };
+
+  const addQuantity = () => {
+    products.forEach((product) => {
+      axios
+        .get(`http://localhost:5000/stocks/${product.Code}`)
+        .then((response) => {
+          product.quantity = response.data.Quantity; // Corrected access to quantity
+          // You might want to do something with the product here,
+          // for example, update the UI or call another function.
+        })
+        .catch((error) => {
+          console.error('Error fetching stock quantity:', error);
+          // Handle errors if needed
+        });
+    });
+  }; // Added closing parenthesis for the function
+
+  const fetchLastSaleID = () => {
+    axios
+      .get('http://localhost:5000/lastorderID')
+      .then((response) => {
+        setLastSaleID(response.data.lastSaleID);
       })
       .catch((error) => {
         console.error('Error fetching products:', error);
@@ -109,12 +140,12 @@ const AddNewOrder = () => {
   }, [selectedProducts]);
 
   useEffect(() => {
-    setNetTotal(totalPrice + deliveryCharges);
+    setNetTotal(totalPrice + deliveryCharges + additionalCharges);
     // eslint-disable-next-line
   }, [deliveryCharges]);
 
   useEffect(() => {
-    setNetTotal(totalPrice + additionalCharges);
+    setNetTotal(totalPrice + additionalCharges + deliveryCharges);
     // eslint-disable-next-line
   }, [additionalCharges]);
 
@@ -135,8 +166,12 @@ const AddNewOrder = () => {
   };
 
   const handleAddCustomer = () => {
+    const customer = {
+      ...newCustomer,
+      UserID: 1
+    };
     axios
-      .post('http://localhost:5000/customers', newCustomer)
+      .post('http://localhost:5000/customers', customer)
       .then((response) => {
         console.log('Customer added successfully:', response.data);
         handleCloseDialog();
@@ -183,10 +218,72 @@ const AddNewOrder = () => {
     setSocialMediaPlatform(event.target.value);
   };
 
-  const handleCreateOrder = () => {};
+  const handleCreateOrder = () => {
+    const order = {
+      SaleID: lastSaleID,
+      Date: new Date(), // Replace with the actual date
+      CustomerID: selectedCustomer.CustomerID,
+      SocialMediaPlatform: socialMediaPlatform,
+      Status: 'Processing',
+      TrackingNumber: trackingDetails,
+      PaymentType: paymentType,
+      UserID: 1
+    };
+
+    const orderProducts = selectedProducts.map((product) => ({
+      SaleID: lastSaleID,
+      ProductID: product.Code,
+      Quantity: product.quantity
+    }));
+
+    const OrderCost = {
+      SaleID: lastSaleID,
+      DeliveryCost: deliveryCharges,
+      AdditionalCost: additionalCharges,
+      UserID: 1
+    };
+
+    axios
+      .post('http://localhost:5000/orders', order)
+      .then((response) => {
+        console.log('Order created successfully:', response.data);
+      })
+      .catch((error) => {
+        console.error('Error creating order:', error);
+      });
+
+    axios
+      .post('http://localhost:5000/order-products', orderProducts)
+      .then((response) => {
+        console.log('Order products created successfully:', response.data);
+      })
+      .catch((error) => {
+        console.error('Error creating order products:', error);
+      });
+
+    axios
+      .post('http://localhost:5000/order-costs', OrderCost)
+      .then((response) => {
+        console.log('Order cost created successfully:', response.data);
+      })
+      .catch((error) => {
+        console.error('Error creating order cost:', error);
+      });
+
+    axios.post('http://localhost:5000/deduct-stock-from-order', { orderProducts: selectedProducts });
+
+    setSelectedCustomer(null);
+    setSelectedProducts([]);
+    setDeliveryCharges(0);
+    setAdditionalCharges(0);
+    setPaymentType('');
+    setTrackingDetails('');
+    setSocialMediaPlatform('');
+    setNetTotal(0);
+  };
 
   return (
-    <MainCard>
+    <MainCard title={`Order#${lastSaleID}`}>
       <Accordion defaultExpanded>
         <AccordionSummary expandIcon={<ExpandMoreIcon />} aria-controls="customer-content" id="customer-header">
           <Typography>
@@ -314,6 +411,7 @@ const AddNewOrder = () => {
             <TextField label="Payment Type" select value={paymentType} onChange={handlePaymentTypeChange} fullWidth margin="normal">
               <MenuItem value="Cash">Bank Transfer</MenuItem>
               <MenuItem value="Online">COD</MenuItem>
+              <MenuItem value="Online">KOKO</MenuItem>
             </TextField>
             <TextField label="Tracking Details" value={trackingDetails} onChange={handleTrackingDetailsChange} fullWidth margin="normal" />
             <TextField
