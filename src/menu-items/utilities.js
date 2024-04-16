@@ -33,17 +33,17 @@ const utilities = {
       icon: icons.DropboxOutlined
     },
     {
-      id: 'util-shadow',
-      title: 'Shadow',
+      id: 'scanner',
+      title: 'Scanner',
       type: 'item',
-      url: '/shadow',
+      url: '/scan',
       icon: icons.BarcodeOutlined
     },
     {
-      id: 'ant-icons',
-      title: 'Ant Icons',
+      id: 'stocks',
+      title: 'Stocks',
       type: 'item',
-      url: '/icons/ant',
+      url: '/stocks',
       icon: icons.AntDesignOutlined,
       breadcrumbs: false
     }
